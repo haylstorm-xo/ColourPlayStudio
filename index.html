@@ -126,10 +126,40 @@
         }
         .header-logo { font-weight: 600; color: var(--primary); font-size: 1.2rem; letter-spacing: 0.5px; }
 
-        /* MAIN LAYOUT */
-        .main-container { display: flex; flex: 1; overflow: hidden; }
+        /* MAIN LAYOUT & RESPONSIVE FLOW */
+        .main-container { 
+            display: flex; 
+            flex: 1; 
+            overflow: hidden; 
+        }
 
-        /* SIDEBARS */
+        /* CANVAS AREA - Made to dominate the space */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #dfe6e9;
+            overflow: auto;
+        }
+        .canvas-container { 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            line-height: 0;
+            max-width: 100%; /* Keeps container bound to screen width */
+        }
+        canvas { 
+            max-width: 100%; 
+            max-height: 70vh; /* Prevents blowing past vertical screen space */
+            height: auto;
+            border-radius: 8px; 
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        /* SIDEBARS (Desktop defaults) */
         .sidebar {
             width: 160px;
             background: var(--surface);
@@ -151,6 +181,88 @@
             gap: 15px;
             align-items: center;
             overflow-y: auto;
+        }
+
+        /* MOBILE OPTIMIZATIONS (Screens under 768px wide) */
+        @media (max-width: 768px) {
+            body {
+                overflow: auto; /* Allow overall scrolling on mobile if panels stack */
+            }
+            
+            .main-container {
+                flex-direction: column; /* Stack vertically: Canvas top, tools bottom */
+                overflow: auto;
+            }
+
+            .canvas-area {
+                order: 1; /* Force canvas to the very top */
+                padding: 10px;
+                min-height: 400px;
+            }
+
+            /* Tool Sidebar floats under canvas */
+            .sidebar {
+                order: 2;
+                width: 100%;
+                box-sizing: border-box;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 15px;
+                gap: 15px;
+            }
+
+            /* Palette turns into a flat row instead of a tight grid */
+            #palette {
+                grid-template-columns: repeat(7, 1fr); /* Spreads out swatches nicer on mobile */
+                gap: 10px;
+            }
+
+            /* Template sidebar moves to the very bottom */
+            .right-sidebar {
+                order: 3;
+                width: 100%;
+                box-sizing: border-box;
+                border-left: none;
+                flex-direction: row; /* Layout templates horizontally */
+                overflow-x: auto; /* Scroll left-to-right to browse */
+                overflow-y: hidden;
+                padding: 15px;
+                gap: 12px;
+                justify-content: flex-start;
+            }
+
+            .gallery-title {
+                width: 100%;
+                display: block;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+
+            .gallery-item {
+                margin-bottom: 0; /* Clear desktop bottom margin */
+                flex-shrink: 0; /* Keep thumbnails round/square and uncrushed */
+            }
+
+            /* Header adjustment for smaller text/buttons */
+            .top-header {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+            .header-logo {
+                font-size: 1rem;
+            }
+            
+            /* Make pop-up responsive */
+            .overlay-content {
+                width: 85%;
+                padding: 30px 20px;
+                border-radius: 25px;
+            }
+            .overlay h1 {
+                font-size: 1.8rem;
+            }
         }
 
         /* PALETTE GRID */
