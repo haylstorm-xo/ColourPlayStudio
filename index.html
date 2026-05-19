@@ -197,6 +197,31 @@
             overflow-y: auto;
         }
 
+        /* 🎨 PALETTE GRID (Desktop Default) */
+        #palette { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); /* 3 columns on desktop screens */
+            gap: 8px; 
+            justify-items: center; 
+            margin: 10px 0;
+        }
+        
+        .swatch { 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .swatch:hover { transform: scale(1.1); }
+        .swatch.active { 
+            transform: scale(1.2); 
+            border: 2px solid var(--text-main);
+            box-shadow: 0 0 0 2px white, 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
         /* MOBILE OPTIMIZATIONS (Screens under 768px wide) */
        @media (max-width: 768px) {
     body {
