@@ -141,7 +141,7 @@
             justify-content: center;
             padding: 20px;
             background: #dfe6e9;
-            overflow: auto; /* Allows panning/scrolling when zoomed */
+            overflow: auto;
         }
         
         /* CANVAS CONTAINER */
@@ -150,14 +150,14 @@
             border-radius: 8px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
             line-height: 0;
-            display: inline-block; /* Shrinks tightly to fit canvas */
+            display: inline-block; 
             position: relative;
         }
         
         canvas { 
             display: block;
             max-width: 100%; 
-            max-height: 70vh; /* Prevents blowing past vertical screen space */
+            max-height: 70vh; 
             height: auto;
             border-radius: 8px; 
             touch-action: none;
@@ -189,7 +189,7 @@
             overflow-y: auto;
         }
 
-        /* 🎨 PALETTE GRID (Desktop Default) */
+        /* PALETTE GRID */
         #palette { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -418,4 +418,428 @@
         }
     
         .pastel-rainbow {
-            /* A soft blend of pastel pink, orange, yellow, green, blue, and
+            background: linear-gradient(to right, #ffb7b2, #ffdac1, #e2f0cb, #b5ead7, #c7ceea, #ffb7b2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700; 
+        }
+    </style>
+</head>
+    
+<body>
+    <div id="welcome-overlay" class="overlay">
+        <div class="overlay-content">
+            <p class="subtitle">AN INTENTIONAL CANVAS</p>
+            <h1>Bring a moment of <span class="pastel-rainbow">colour</span> to your day.</h1>
+            <p class="description">A minimalist digital canvas designed to let you unwind. Upload your own art or explore our templates. Pick a shade, fill the canvas, and clear your mind.</p>
+            <button class="btn-start" onclick="closeOverlay()">Get started</button>
+        </div>
+    </div>
+
+    <div class="top-header">
+        <div class="header-logo">🎨 The Love Our Laughter ColourPlay Studio</div>
+        <div class="btn-group">
+            <button class="btn-reset" onclick="resetCanvas()">🗑️ Reset</button>
+            
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <button id="btn-save-draft" onclick="saveDraft()">💾 Save Draft</button>
+                <span id="draft-status" style="font-size: 10px; color: var(--text-muted); font-style: italic;">Checking device storage...</span>
+            </div>
+            
+            <button id="btn-load-draft" onclick="loadDraft()">📂 Load Draft</button>
+            
+            <input type="file" id="upload" accept="image/*" style="display:none">
+            <button class="btn-upload" onclick="document.getElementById('upload').click()">📤 Upload</button>
+            <button class="btn-save" onclick="downloadImage()">📥 Download</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="tool-section">
+                <span class="slider-label">Brush Size</span>
+                <input type="range" id="brushSize" min="1" max="50" value="8">
+            </div>
+            
+            <div class="tool-section">
+                <span class="slider-label">Tools</span>
+                <div class="tool-grid">
+                    <button id="btn-fill" class="tool-active" onclick="setTool('fill')"><span>🧺</span> Fill</button>
+                    <button id="btn-brush" onclick="setTool('brush')"><span>🖌️</span> Brush</button>
+                    <button id="btn-erase" onclick="setTool('erase')"><span>🧽</span> Eraser</button>
+                    <button class="btn-undo" onclick="undo()"><span>↩️</span> Undo</button>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <span class="slider-label">Palette</span>
+                <div id="palette"></div>
+                
+                <input type="color" id="customColor" value="#ff9999" style="width:100%; height:35px; border-radius:8px; border:1px solid var(--border); background:none; cursor:pointer; padding: 0;">
+                
+                <div id="recent-shades-container" style="margin-top: 10px; display: none; align-items: center; gap: 8px;">
+                    <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Recent:</span>
+                    <div id="recent-shades" style="display: flex; gap: 8px;"></div>
+                </div>
+            </div>
+
+            <div class="tool-section">
+                <span class="slider-label">Zoom</span>
+                <input type="range" id="zoomLevel" min="1" max="4" step="0.1" value="1">
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div class="canvas-container">
+                <canvas id="paintCanvas" width="800" height="800"></canvas>
+            </div>
+        </div>
+
+        <div class="right-sidebar">
+            <div class="gallery-title">Templates</div>
+            <img class="gallery-item" src="images/LOL.PNG" onclick="loadTemplate(this.src)" alt="Template">
+            <img class="gallery-item" src="images/LoveYourself.png" onclick="loadTemplate(this.src)" alt="Template">
+            <img class="gallery-item" src="images/Believe.png" onclick="loadTemplate(this.src)" alt="Template">
+            <img class="gallery-item" src="images/Celestial.PNG" onclick="loadTemplate(this.src)" alt="Template">
+            <img class="gallery-item" src="images/OldWays.png" onclick="loadTemplate(this.src)" alt="Template">
+            <img class="gallery-item" src="images/Grow.PNG" onclick="loadTemplate(this.src)" alt="Template">
+        </div>
+    </div>
+
+    <script>
+        function closeOverlay() {
+            const overlay = document.getElementById('welcome-overlay');
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500); 
+        }
+        
+        const canvas = document.getElementById('paintCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const brushSlider = document.getElementById('brushSize');
+        
+        let currentColor = '#e74c3c';
+        let currentTool = 'fill';
+        let history = [];
+        let isDrawing = false;
+        let recentColors = [];
+
+        // Initialize Canvas with White Background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const colors = [
+            '#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#e84393',
+            '#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a2d2ff', '#bdb2ff',
+            '#f5ebe0', '#e3d5ca', '#d5bdaf', '#8d99ae', '#4a4e69', '#2d3436', '#636e72'
+        ];
+
+        // Combined App Startup
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTemplate('images/LOL.PNG');
+            checkExistingDraft();
+        });
+
+        // Watch the custom color picker for changes
+        document.getElementById('customColor').onchange = (e) => {
+            const chosenColor = e.target.value;
+            if (recentColors[0] !== chosenColor) {
+                recentColors.unshift(chosenColor);
+                if (recentColors.length > 2) {
+                    recentColors.pop();
+                }
+                updateRecentShadesUI();
+            }
+            selectColor(chosenColor);
+        };
+
+        function updateRecentShadesUI() {
+            const container = document.getElementById('recent-shades-container');
+            const shelf = document.getElementById('recent-shades');
+            shelf.innerHTML = '';
+            
+            if (recentColors.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            recentColors.forEach(color => {
+                const circle = document.createElement('div');
+                circle.className = 'swatch';
+                circle.style.width = '24px';
+                circle.style.height = '24px';
+                circle.style.backgroundColor = color;
+                circle.onclick = () => selectColor(color);
+                shelf.appendChild(circle);
+            });
+        }
+        
+        // Generate main color palette
+        const palette = document.getElementById('palette');
+        colors.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'swatch' + (c === currentColor ? ' active' : '');
+            div.style.backgroundColor = c;
+            div.onclick = () => selectColor(c, div);
+            palette.appendChild(div);
+        });
+
+        // Zoom Engine
+        const zoomSlider = document.getElementById('zoomLevel');
+        zoomSlider.oninput = (e) => {
+            canvas.style.transformOrigin = 'center top'; 
+            canvas.style.transform = `scale(${e.target.value})`;
+        };
+
+        // File Upload Engine
+        document.getElementById('upload').onchange = function(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                loadTemplate(event.target.result);
+            };
+            if (e.target.files[0]) {
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        };
+                
+        function selectColor(color, element) {
+            currentColor = color;
+            document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            if(element) element.classList.add('active');
+            document.getElementById('customColor').value = color;
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('tool-active'));
+            document.getElementById(`btn-${tool}`).classList.add('tool-active');
+            
+            if(tool === 'erase') canvas.style.cursor = 'help';
+            else if(tool === 'fill') canvas.style.cursor = 'cell';
+            else canvas.style.cursor = 'crosshair';
+        }
+
+        function saveState() {
+            if (history.length > 15) history.shift();
+            history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        }
+
+        function undo() {
+            if (history.length > 0) {
+                ctx.putImageData(history.pop(), 0, 0);
+            }
+        }
+
+        function resetCanvas() {
+            const confirmReset = confirm("Are you sure you want to clear your masterpiece? This cannot be undone!");
+            if (confirmReset) {
+                saveState(); 
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function startDrawing(e) {
+            saveState();
+            const pos = getMousePos(e);
+            if (currentTool === 'fill') {
+                floodFill(Math.floor(pos.x), Math.floor(pos.y), currentColor);
+            } else {
+                isDrawing = true;
+                draw(e);
+            }
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getMousePos(e);
+            ctx.lineWidth = brushSlider.value;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            if (currentTool === 'erase') {
+                ctx.globalCompositeOperation = 'destination-out';
+            } else {
+                ctx.globalCompositeOperation = 'source-over'; 
+                ctx.strokeStyle = currentColor;
+            }
+
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        // Event Listeners for Painting
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function loadTemplate(src) {
+            saveState();
+            const img = new Image();
+            img.crossOrigin = "anonymous"; 
+            img.onload = () => {
+                ctx.globalCompositeOperation = 'source-over';
+                const ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+                const x = (canvas.width - img.width * ratio) / 2;
+                const y = (canvas.height - img.height * ratio) / 2;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0,0, canvas.width, canvas.height);
+                ctx.drawImage(img, x, y, img.width * ratio, img.height * ratio);
+            };
+            img.src = src; 
+        }
+
+        // Flood Fill Algorithm
+        function floodFill(startX, startY, fillHex) {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const width = imageData.width;
+            const height = imageData.height;
+            const data = imageData.data;
+            const fillColor = hexToRgb(fillHex);
+            const targetColor = getPixel(imageData, startX, startY);
+            if (colorsMatch(targetColor, [fillColor.r, fillColor.g, fillColor.b, 255], 2)) return;
+            const stack = [[startX, startY]];
+            const visited = new Uint8Array(width * height);
+            while (stack.length > 0) {
+                const [x, y] = stack.pop();
+                if (x < 0 || x >= width || y < 0 || y >= height) continue;
+                const pos = y * width + x;
+                if (visited[pos]) continue;
+                if (colorsMatch(getPixel(imageData, x, y), targetColor, 80)) {
+                    const offset = pos * 4;
+                    data[offset] = fillColor.r;
+                    data[offset + 1] = fillColor.g;
+                    data[offset + 2] = fillColor.b;
+                    data[offset + 3] = 255;
+                    visited[pos] = 1;
+                    stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+                }
+            }
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function getPixel(imageData, x, y) {
+            const index = (y * imageData.width + x) * 4;
+            return [imageData.data[index], imageData.data[index + 1], imageData.data[index + 2], imageData.data[index + 3]];
+        }
+
+        function colorsMatch(c1, c2, tolerance) {
+            return Math.abs(c1[0] - c2[0]) <= tolerance && Math.abs(c1[1] - c2[1]) <= tolerance && Math.abs(c1[2] - c2[2]) <= tolerance;
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+        }
+
+        function downloadImage() {
+            try {
+                const link = document.createElement('a');
+                link.download = 'my-masterpiece.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                alert("Security block: To save your artwork, this file needs to be hosted on GitHub Pages or a development server!");
+                console.error(err);
+            }
+        }
+
+        // --- 💾 LOCAL STORAGE DRAFT SYSTEMS ---
+        function saveDraft() {
+            try {
+                const canvasDataUrl = canvas.toDataURL('image/png');
+                localStorage.setItem('colourplay_canvas_draft', canvasDataUrl);
+                
+                const statusText = document.getElementById('draft-status');
+                if (statusText) {
+                    statusText.innerText = "Draft saved!";
+                    statusText.style.color = "#2ecc71"; 
+                }
+                
+                checkExistingDraft();
+                
+                setTimeout(() => {
+                    if (statusText) {
+                        statusText.innerText = "Saved on device";
+                        statusText.style.color = "var(--text-muted)";
+                    }
+                }, 3000);
+            } catch (err) {
+                alert("Could not save draft locally. Your browser storage might be full or restricted.");
+                console.error(err);
+            }
+        }
+
+        function loadDraft() {
+            const savedData = localStorage.getItem('colourplay_canvas_draft');
+            if (savedData) {
+                saveState(); 
+                const img = new Image();
+                img.onload = () => {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    
+                    const statusText = document.getElementById('draft-status');
+                    if (statusText) {
+                        statusText.innerText = "Loaded!";
+                        setTimeout(() => {
+                            statusText.innerText = "Saved on device";
+                        }, 2000);
+                    }
+                };
+                img.src = savedData;
+            }
+        }
+
+        function checkExistingDraft() {
+            const loadBtn = document.getElementById('btn-load-draft');
+            const statusText = document.getElementById('draft-status');
+            const hasDraft = localStorage.getItem('colourplay_canvas_draft');
+            
+            if (!loadBtn) return; 
+
+            if (hasDraft) {
+                loadBtn.removeAttribute('disabled');
+                loadBtn.style.opacity = '1';
+                loadBtn.style.cursor = 'pointer';
+                loadBtn.style.background = 'var(--warning)'; 
+                loadBtn.style.color = 'white';
+                if (statusText) statusText.innerText = "Saved on device";
+            } else {
+                loadBtn.setAttribute('disabled', 'true');
+                loadBtn.style.opacity = '0.5';
+                loadBtn.style.cursor = 'not-allowed';
+                loadBtn.style.background = '#f1f2f6';
+                loadBtn.style.color = 'var(--text-muted)';
+                if (statusText) statusText.innerText = "No draft found";
+            }
+        }
+    </script>
+</body>
+</html>
