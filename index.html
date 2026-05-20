@@ -443,14 +443,22 @@
     </div>
 
     <div class="top-header">
-        <div class="header-logo">🎨 The Love Our Laughter ColourPlay Studio</div>
-        <div class="btn-group">
-            <button class="btn-reset" onclick="resetCanvas()">🗑️ Reset</button>
-            <input type="file" id="upload" accept="image/*" style="display:none">
-            <button class="btn-upload" onclick="document.getElementById('upload').click()">📤 Upload</button>
-            <button class="btn-save" onclick="downloadImage()">📥 Download</button>
+    <div class="header-logo">🎨 The Love Our Laughter ColourPlay Studio</div>
+    <div class="btn-group">
+        <button class="btn-reset" onclick="resetCanvas()">🗑️ Reset</button>
+        
+        <div class="header-draft-wrapper">
+            <button id="btn-save-draft" onclick="saveDraft()">💾 Save Draft</button>
+            <span id="draft-status">No saved draft found</span>
         </div>
+        
+        <button id="btn-load-draft" onclick="loadDraft()">📂 Load Draft</button>
+        
+        <input type="file" id="upload" accept="image/*" style="display:none">
+        <button class="btn-upload" onclick="document.getElementById('upload').click()">📤 Upload</button>
+        <button class="btn-save" onclick="downloadImage()">📥 Download</button>
     </div>
+</div>
 
     <div class="main-container">
         <div class="sidebar">
@@ -775,67 +783,85 @@
             }
         }
 
-        // --- 💾 LOCAL STORAGE DRAFT SYSTEMS ---
-        function saveDraft() {
-            try {
-                const canvasDataUrl = canvas.toDataURL('image/png');
-                localStorage.setItem('colourplay_canvas_draft', canvasDataUrl);
-                
-                const statusText = document.getElementById('draft-status');
-                statusText.innerText = "Draft saved successfully!";
-                statusText.style.color = "#2ecc71"; 
-                
-                checkExistingDraft();
-                
-                setTimeout(() => {
-                    statusText.innerText = "Draft stored safely on device";
-                    statusText.style.color = "var(--text-muted)";
-                }, 3000);
-            } catch (err) {
-                alert("Could not save draft locally. Check browser permissions!");
-                console.error(err);
-            }
+// --- 💾 LOCAL STORAGE DRAFT SYSTEMS ---
+function saveDraft() {
+    try {
+        const canvasDataUrl = canvas.toDataURL('image/png');
+        localStorage.setItem('colourplay_canvas_draft', canvasDataUrl);
+        
+        const statusText = document.getElementById('draft-status');
+        if (statusText) {
+            statusText.innerText = "Draft saved!";
+            statusText.style.color = "#2ecc71"; // Fresh green success indicator
         }
-
-        function loadDraft() {
-            const savedData = localStorage.getItem('colourplay_canvas_draft');
-            if (savedData) {
-                saveState(); 
-                const img = new Image();
-                img.onload = () => {
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0);
-                    document.getElementById('draft-status').innerText = "Draft loaded!";
-                    setTimeout(() => {
-                        document.getElementById('draft-status').innerText = "Draft stored safely on device";
-                    }, 2000);
-                };
-                img.src = savedData;
+        
+        // Refresh button states immediately after saving
+        checkExistingDraft();
+        
+        setTimeout(() => {
+            if (statusText) {
+                statusText.innerText = "Saved on device";
+                statusText.style.color = "var(--text-muted)";
             }
-        }
+        }, 3000);
+    } catch (err) {
+        alert("Could not save draft locally. Your browser storage might be full or restricted.");
+        console.error(err);
+    }
+}
 
-        function checkExistingDraft() {
-            const loadBtn = document.getElementById('btn-load-draft');
-            const statusText = document.getElementById('draft-status');
-            const hasDraft = localStorage.getItem('colourplay_canvas_draft');
+function loadDraft() {
+    const savedData = localStorage.getItem('colourplay_canvas_draft');
+    if (savedData) {
+        saveState(); // Pushes current state to Undo history before loading so you don't lose work!
+        const img = new Image();
+        img.onload = () => {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
             
-            if (hasDraft) {
-                loadBtn.removeAttribute('disabled');
-                loadBtn.style.opacity = '1';
-                loadBtn.style.cursor = 'pointer';
-                loadBtn.style.background = 'var(--warning)'; 
-                loadBtn.style.color = 'white';
-                statusText.innerText = "Draft stored safely on device";
-            } else {
-                loadBtn.setAttribute('disabled', 'true');
-                loadBtn.style.opacity = '0.5';
-                loadBtn.style.cursor = 'not-allowed';
-                loadBtn.style.background = '#f1f2f6';
-                loadBtn.style.color = 'var(--text-muted)';
-                statusText.innerText = "No saved draft found";
+            const statusText = document.getElementById('draft-status');
+            if (statusText) {
+                statusText.innerText = "Loaded!";
+                setTimeout(() => {
+                    statusText.innerText = "Saved on device";
+                }, 2000);
             }
-        }
+        };
+        img.src = savedData;
+    }
+}
+
+function checkExistingDraft() {
+    const loadBtn = document.getElementById('btn-load-draft');
+    const statusText = document.getElementById('draft-status');
+    const hasDraft = localStorage.getItem('colourplay_canvas_draft');
+    
+    // Safety check to ensure elements exist in the DOM before modifying them
+    if (!loadBtn) return; 
+
+    if (hasDraft) {
+        loadBtn.removeAttribute('disabled');
+        loadBtn.style.opacity = '1';
+        loadBtn.style.cursor = 'pointer';
+        loadBtn.style.background = 'var(--warning)'; // Soft pastel orange/yellow alert color
+        loadBtn.style.color = 'white';
+        if (statusText) statusText.innerText = "Saved on device";
+    } else {
+        loadBtn.setAttribute('disabled', 'true');
+        loadBtn.style.opacity = '0.5';
+        loadBtn.style.cursor = 'not-allowed';
+        loadBtn.style.background = '#f1f2f6';
+        loadBtn.style.color = 'var(--text-muted)';
+        if (statusText) statusText.innerText = "No draft found";
+    }
+}
+
+// Ensure the app checks for an existing save the absolute second the page loads
+window.addEventListener('DOMContentLoaded', () => {
+    // If you have template loading logic here, keep it! Just add this line:
+    checkExistingDraft();
+});
     </script>
 </body>
 </html>
