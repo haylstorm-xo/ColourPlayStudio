@@ -512,6 +512,27 @@
             gap: 8px; 
             width: 100%; 
         }
+
+        /* 🛠️ COMPACT TOOL GRID FOR MOBILE */
+    .tool-grid {  
+        display: grid;  
+        grid-template-columns: repeat(4, 1fr); /* Forces all 4 buttons onto a single line */
+        gap: 6px; /* Tightens the spacing between them */
+        width: 100%;  
+    }
+
+    /* Shrinks and styles the individual buttons inside the sidebar on mobile */
+    .sidebar button { 
+        width: 100%; 
+        padding: 6px 2px; /* Pulls in the padding so text doesn't overflow */
+        display: flex; 
+        flex-direction: column; /* Places the emoji directly above the text label */
+        align-items: center; 
+        justify-content: center;
+        gap: 2px;
+        font-size: 10px; /* Tighter font size to ensure 'Eraser' fits easily */
+        border-radius: 12px; /* Slightly rounder pill shape for a native app feel */
+    }
     </style>
 </head>
     
