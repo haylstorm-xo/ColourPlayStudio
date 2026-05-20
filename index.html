@@ -469,6 +469,13 @@
             color: white; 
         }
 
+        /* Specific scaling for the top header navigation buttons */
+        .top-header button {
+            padding: 6px 12px; /* Squeezes vertical and horizontal padding */
+            font-size: 11px;   /* Shrinks the text slightly to match the layout */
+            border-radius: 15px; /* Gives them a sleeker, tighter pill shape */
+        }
+
         /* GALLERY */
         .slider-label, .gallery-title { 
             font-size: 13px; 
@@ -524,7 +531,7 @@
             <button class="btn-reset" onclick="resetCanvas()">🗑️ Reset</button>
             <input type="file" id="upload" accept="image/*" style="display:none">
             <button class="btn-upload" onclick="document.getElementById('upload').click()">📤 Upload</button>
-            <button class="btn-save" onclick="downloadImage()">📥 Save Art</button>
+            <button class="btn-save" onclick="downloadImage()">📥 Download</button>
         </div>
     </div>
 
