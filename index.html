@@ -10,7 +10,7 @@
             --primary: #99ccff; /* Very light blue */
             --accent: #cc99ff;  /* Very light violet */
             --bg: #f7f9fb;      /* Light grayish blue */
-                    
+                                
             /* UI Surfaces */
             --surface: #ffffff; /* White */
             --border: #eeeeee; /* Very light gray */
@@ -74,7 +74,7 @@
             box-shadow: 0 6px 20px rgba(153, 204, 255, 0.6);
             filter: brightness(1.05);
         }
-                
+            
         .overlay h1 {
             font-family: 'Georgia', serif;
             font-size: 3rem;
@@ -144,33 +144,25 @@
             overflow: auto; /* Allows panning/scrolling when zoomed */
         }
         
-        /* CANVAS CONTAINER - The white card directly behind the image */
+        /* CANVAS CONTAINER */
         .canvas-container { 
             background: white; 
             border-radius: 8px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
             line-height: 0;
-            display: inline-block; /* Crucial: Shrinks tightly to fit the canvas base size */
+            display: inline-block; /* Shrinks tightly to fit canvas */
             position: relative;
         }
         
         canvas { 
             display: block;
             max-width: 100%; 
-            max-height: 80vh; 
-            border-radius: 8px; 
-            touch-action: none;
-            cursor: crosshair;
-            transition: transform 0.1s ease-out; /* Keeps the zoom adjustment feeling silky smooth */
-        }
-        
-        canvas { 
-            max-width: 100%; 
             max-height: 70vh; /* Prevents blowing past vertical screen space */
             height: auto;
             border-radius: 8px; 
             touch-action: none;
             cursor: crosshair;
+            transition: transform 0.1s ease-out; 
         }
 
         /* SIDEBARS (Desktop defaults) */
@@ -200,178 +192,6 @@
         /* 🎨 PALETTE GRID (Desktop Default) */
         #palette { 
             display: grid; 
-            grid-template-columns: repeat(3, 1fr); /* 3 columns on desktop screens */
-            gap: 8px; 
-            justify-items: center; 
-            margin: 10px 0;
-        }
-        
-        .swatch { 
-            width: 30px; 
-            height: 30px; 
-            border-radius: 50%; 
-            cursor: pointer; 
-            border: 1px solid rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
-        }
-        
-        .swatch:hover { transform: scale(1.1); }
-        .swatch.active { 
-            transform: scale(1.2); 
-            border: 2px solid var(--text-main);
-            box-shadow: 0 0 0 2px white, 0 2px 8px rgba(0,0,0,0.2);
-        }
-        
-        /* MOBILE OPTIMIZATIONS (Screens under 768px wide) */
-       @media (max-width: 768px) {
-    body {
-        overflow: hidden; /* Lock the main window down so only containers scroll */
-        height: 100vh;
-    }
-    
-    .main-container {
-        flex-direction: column; 
-        overflow: hidden; /* Stop the whole page from slipping under the safari bar */
-        height: calc(100vh - 70px); /* Accounts for your top header */
-    }
-
-    .canvas-area {
-        order: 1; 
-        padding: 10px;
-        width: 100%;
-        box-sizing: border-box;
-        flex: 1; /* Dynamic sizing to fill available space */
-        max-height: 50vh; 
-        overflow: auto;    
-        display: block;   
-    }
-
-    .canvas-container { 
-        margin: 0 auto;
-        width: max-content; 
-        height: max-content;
-    }
-
-    /* 🛠️ IMPROVED MOBILE TOOL SIDEBAR */
-    .sidebar {
-        order: 2;
-        width: 100%;
-        box-sizing: border-box;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        padding: 12px 15px;
-        gap: 12px;
-        overflow-y: auto;
-        max-height: 35vh; /* Prevents tools from squeezing the canvas out */
-    }
-
-    /* 🎨 ACCESSIBLE MOBILE PALETTE */
-    #palette {
-        grid-template-columns: repeat(6, 1fr); /* 6 columns fits beautifully on iPhone 12 */
-        gap: 12px;
-        margin: 8px 0;
-    }
-
-    .swatch {
-        width: 42px;  /* Blown up from 30px so thumbs can actually tap them */
-        height: 42px; /* Blown up from 30px */
-    }
-    
-    .swatch.active {
-        transform: scale(1.1); /* Slightly smaller scale up so it doesn't clip neighbors */
-    }
-
-    /* 🖼️ SAFARI-PROOF HORIZONTAL TEMPLATES */
-    .right-sidebar {
-        order: 3;
-        width: 100%;
-        box-sizing: border-box;
-        border-left: none;
-        flex-direction: row; 
-        overflow-x: auto; 
-        overflow-y: hidden;
-        padding: 10px 15px 30px 15px; /* Extra bottom padding pushes it above Safari's nav bar */
-        gap: 15px;
-        justify-content: flex-start;
-        align-items: center;
-        background: var(--surface);
-        -webkit-overflow-scrolling: touch; /* Forces buttery-smooth momentum scrolling on iOS */
-    }
-
-    /* Keep Safari scrollbars visible so users know they can swipe */
-    .right-sidebar::-webkit-scrollbar {
-        height: 5px;
-        display: block;
-    }
-    .right-sidebar::-webkit-scrollbar-thumb {
-        background-color: var(--text-light);
-        border-radius: 10px;
-    }
-
-    .gallery-title {
-        font-size: 11px;
-        width: auto;
-        margin-bottom: 0;
-        margin-right: 5px;
-        white-space: nowrap;
-        align-self: center;
-    }
-
-    .gallery-item {
-        margin-bottom: 0; 
-        flex-shrink: 0; 
-        width: 75px;  /* Constrain proportions explicitly */
-        height: 75px;
-    }
-
-    /* Header adjustment */
-    .top-header {
-        padding: 8px 15px;
-        flex-direction: column;
-        gap: 6px;
-    }
-    .header-logo {
-        font-size: 0.95rem;
-    }
-}
-
-            .gallery-title {
-                width: 100%;
-                display: block;
-                margin-bottom: 0;
-                white-space: nowrap;
-            }
-
-            .gallery-item {
-                margin-bottom: 0; /* Clear desktop bottom margin */
-                flex-shrink: 0; /* Keep thumbnails round/square and uncrushed */
-            }
-
-            /* Header adjustment for smaller text/buttons */
-            .top-header {
-                padding: 10px 15px;
-                flex-direction: column;
-                gap: 8px;
-                text-align: center;
-            }
-            .header-logo {
-                font-size: 1rem;
-            }
-            
-            /* Make pop-up responsive */
-            .overlay-content {
-                width: 85%;
-                padding: 30px 20px;
-                border-radius: 25px;
-            }
-            .overlay h1 {
-                font-size: 1.8rem;
-            }
-        }
-
-        /* PALETTE GRID */
-        #palette { 
-            display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             gap: 8px; 
             justify-items: center; 
@@ -392,30 +212,6 @@
             transform: scale(1.2); 
             border: 2px solid var(--text-main);
             box-shadow: 0 0 0 2px white, 0 2px 8px rgba(0,0,0,0.2);
-        }
-        
-        /* CANVAS AREA */
-        .canvas-area {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: #dfe6e9;
-            overflow: auto;
-        }
-        .canvas-container { 
-            background: white; 
-            border-radius: 8px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            line-height: 0;
-        }
-        canvas { 
-            max-width: 100%; 
-            max-height: 80vh; 
-            border-radius: 8px; 
-            touch-action: none;
-            cursor: crosshair;
         }
 
         /* BUTTON STYLING */
@@ -448,8 +244,6 @@
             font-size: 11px; 
         }
         
-        .btn-undo { grid-column: span 1; }
-
         .tool-active { 
             background: var(--primary) !important; 
             color: white !important; 
@@ -463,20 +257,18 @@
             color: var(--danger); 
             border: 1px solid var(--danger); 
         }
-
         .btn-reset:hover { 
             background: var(--danger); 
             color: white; 
         }
 
-        /* Specific scaling for the top header navigation buttons */
         .top-header button {
-            padding: 6px 12px; /* Squeezes vertical and horizontal padding */
-            font-size: 11px;   /* Shrinks the text slightly to match the layout */
-            border-radius: 15px; /* Gives them a sleeker, tighter pill shape */
+            padding: 6px 12px; 
+            font-size: 11px;   
+            border-radius: 15px; 
         }
 
-        /* GALLERY */
+        /* LABELS */
         .slider-label, .gallery-title { 
             font-size: 13px; 
             font-weight: 700; 
@@ -499,7 +291,6 @@
             transition: all 0.3s ease;
             margin-bottom: 8px; 
         }
-        
         .gallery-item:hover { 
             border-color: var(--primary); 
             transform: scale(1.08); 
@@ -512,27 +303,119 @@
             gap: 8px; 
             width: 100%; 
         }
+        
+        /* 📱 MOBILE OPTIMIZATIONS */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column; 
+                height: calc(100vh - 70px); 
+            }
 
-        /* 🛠️ COMPACT TOOL GRID FOR MOBILE */
-    .tool-grid {  
-        display: grid;  
-        grid-template-columns: repeat(4, 1fr); /* Forces all 4 buttons onto a single line */
-        gap: 6px; /* Tightens the spacing between them */
-        width: 100%;  
-    }
+            .canvas-area {
+                order: 1; 
+                padding: 10px;
+                width: 100%;
+                box-sizing: border-box;
+                flex: 1; 
+                max-height: 50vh; 
+            }
 
-    /* Shrinks and styles the individual buttons inside the sidebar on mobile */
-    .sidebar button { 
-        width: 100%; 
-        padding: 6px 2px; /* Pulls in the padding so text doesn't overflow */
-        display: flex; 
-        flex-direction: column; /* Places the emoji directly above the text label */
-        align-items: center; 
-        justify-content: center;
-        gap: 2px;
-        font-size: 10px; /* Tighter font size to ensure 'Eraser' fits easily */
-        border-radius: 12px; /* Slightly rounder pill shape for a native app feel */
-    }
+            .canvas-container { 
+                margin: 0 auto;
+                width: max-content; 
+                height: max-content;
+            }
+
+            .sidebar {
+                order: 2;
+                width: 100%;
+                box-sizing: border-box;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 12px 15px;
+                gap: 12px;
+                max-height: 35vh; 
+            }
+
+            .tool-grid {  
+                grid-template-columns: repeat(4, 1fr); 
+                gap: 6px; 
+            }
+
+            .sidebar button { 
+                padding: 6px 2px; 
+                font-size: 10px; 
+                border-radius: 12px; 
+            }
+
+            #palette {
+                grid-template-columns: repeat(6, 1fr); 
+                gap: 12px;
+                margin: 8px 0;
+            }
+
+            .swatch {
+                width: 42px;  
+                height: 42px; 
+            }
+            
+            .swatch.active { transform: scale(1.1); }
+
+            .right-sidebar {
+                order: 3;
+                width: 100%;
+                box-sizing: border-box;
+                border-left: none;
+                flex-direction: row; 
+                overflow-x: auto; 
+                overflow-y: hidden;
+                padding: 10px 15px 30px 15px; 
+                gap: 15px;
+                justify-content: flex-start;
+                align-items: center;
+                background: var(--surface);
+                -webkit-overflow-scrolling: touch; 
+            }
+
+            .right-sidebar::-webkit-scrollbar {
+                height: 5px;
+                display: block;
+            }
+            .right-sidebar::-webkit-scrollbar-thumb {
+                background-color: var(--text-light);
+                border-radius: 10px;
+            }
+
+            .gallery-title {
+                font-size: 11px;
+                width: auto;
+                margin-bottom: 0;
+                margin-right: 5px;
+                white-space: nowrap;
+            }
+
+            .gallery-item {
+                margin-bottom: 0; 
+                flex-shrink: 0; 
+                width: 75px;  
+                height: 75px;
+            }
+
+            .top-header {
+                padding: 8px 15px;
+                flex-direction: column;
+                gap: 6px;
+                text-align: center;
+            }
+            .header-logo { font-size: 0.95rem; }
+            
+            .overlay-content {
+                width: 85%;
+                padding: 30px 20px;
+                border-radius: 25px;
+            }
+            .overlay h1 { font-size: 1.8rem; }
+        }
     </style>
 </head>
     
@@ -574,16 +457,16 @@
             </div>
             
             <div class="tool-section">
-    <span class="slider-label">Palette</span>
-    <div id="palette"></div>
-    
-    <input type="color" id="customColor" value="#ff9999" style="width:100%; height:35px; border-radius:8px; border:1px solid var(--border); background:none; cursor:pointer; padding: 0;">
-    
-    <div id="recent-shades-container" style="margin-top: 10px; display: none; align-items: center; gap: 8px;">
-        <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Recent:</span>
-        <div id="recent-shades" style="display: flex; gap: 8px;"></div>
-    </div>
-</div>
+                <span class="slider-label">Palette</span>
+                <div id="palette"></div>
+                
+                <input type="color" id="customColor" value="#ff9999" style="width:100%; height:35px; border-radius:8px; border:1px solid var(--border); background:none; cursor:pointer; padding: 0;">
+                
+                <div id="recent-shades-container" style="margin-top: 10px; display: none; align-items: center; gap: 8px;">
+                    <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Recent:</span>
+                    <div id="recent-shades" style="display: flex; gap: 8px;"></div>
+                </div>
+            </div>
 
             <div class="tool-section">
                 <span class="slider-label">Zoom</span>
@@ -594,7 +477,7 @@
                 <span class="slider-label">Local Draft</span>
                 <div class="tool-grid">
                     <button id="btn-save-draft" onclick="saveDraft()">💾 Save</button>
-                    <button id="btn-load-draft" onclick="loadDraft()" style="opacity: 0.5; cursor: not-allowed;" disabled>📂 Load</button>
+                    <button id="btn-load-draft" onclick="loadDraft()">📂 Load</button>
                 </div>
                 <span id="draft-status" style="font-size: 10px; color: var(--text-muted); display: block; text-align: center; margin-top: 6px; font-style: italic;">No saved draft found</span>
             </div>
@@ -635,6 +518,7 @@
         let currentTool = 'fill';
         let history = [];
         let isDrawing = false;
+        let recentColors = [];
 
         // Initialize Canvas with White Background
         ctx.fillStyle = 'white';
@@ -646,65 +530,48 @@
             '#f5ebe0', '#e3d5ca', '#d5bdaf', '#8d99ae', '#4a4e69', '#2d3436', '#636e72'
         ];
 
-        // Array to hold up to 2 recently used custom colors
-let recentColors = [];
+        // Combined App Startup
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTemplate('images/LOL.PNG');
+            checkExistingDraft();
+        });
 
-// Watch the custom color picker for changes
-document.getElementById('customColor').onchange = (e) => {
-    const chosenColor = e.target.value;
-    
-    // Only save it to history if it's not already the most recent color
-    if (recentColors[0] !== chosenColor) {
-        // Add new color to the beginning of the list
-        recentColors.unshift(chosenColor);
-        
-        // Trim the list so it strictly only holds the last 2 colors
-        if (recentColors.length > 2) {
-            recentColors.pop();
+        // Watch the custom color picker for changes
+        document.getElementById('customColor').onchange = (e) => {
+            const chosenColor = e.target.value;
+            if (recentColors[0] !== chosenColor) {
+                recentColors.unshift(chosenColor);
+                if (recentColors.length > 2) {
+                    recentColors.pop();
+                }
+                updateRecentShadesUI();
+            }
+            selectColor(chosenColor);
+        };
+
+        function updateRecentShadesUI() {
+            const container = document.getElementById('recent-shades-container');
+            const shelf = document.getElementById('recent-shades');
+            shelf.innerHTML = '';
+            
+            if (recentColors.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            recentColors.forEach(color => {
+                const circle = document.createElement('div');
+                circle.className = 'swatch';
+                circle.style.width = '24px';
+                circle.style.height = '24px';
+                circle.style.backgroundColor = color;
+                circle.onclick = () => selectColor(color);
+                shelf.appendChild(circle);
+            });
         }
         
-        // Re-render the tiny recent swatches panel
-        updateRecentShadesUI();
-    }
-    
-    // Select the color immediately for use
-    selectColor(chosenColor);
-};
-
-function updateRecentShadesUI() {
-    const container = document.getElementById('recent-shades-container');
-    const shelf = document.getElementById('recent-shades');
-    
-    // Clear out the previous state
-    shelf.innerHTML = '';
-    
-    if (recentColors.length === 0) {
-        container.style.display = 'none';
-        return;
-    }
-    
-    // Make the panel visible now that there are colors to show
-    container.style.display = 'flex';
-    
-    // Loop through our history array and build the little circles
-    recentColors.forEach(color => {
-        const circle = document.createElement('div');
-        circle.className = 'swatch';
-        // Give it a slightly smaller footprint so it stays secondary to the main grid
-        circle.style.width = '24px';
-        circle.style.height = '24px';
-        circle.style.backgroundColor = color;
-        circle.style.cursor = 'pointer';
-        circle.style.borderRadius = '50%';
-        circle.style.border = '1px solid rgba(0,0,0,0.1)';
-        
-        // Tapping the recent circle loads it right back into active use
-        circle.onclick = () => selectColor(color);
-        
-        shelf.appendChild(circle);
-    });
-}
-        
+        // Generate main color palette
         const palette = document.getElementById('palette');
         colors.forEach(c => {
             const div = document.createElement('div');
@@ -714,17 +581,14 @@ function updateRecentShadesUI() {
             palette.appendChild(div);
         });
 
+        // Zoom Engine
         const zoomSlider = document.getElementById('zoomLevel');
-zoomSlider.oninput = (e) => {
-    const scale = e.target.value;
-    
-    // Smoothly scale the canvas from the center top
-    canvas.style.transformOrigin = 'center top'; 
-    canvas.style.transform = `scale(${scale})`;
-    
-    // REMOVED the manual parent element pixel sizing lines!
-};
+        zoomSlider.oninput = (e) => {
+            canvas.style.transformOrigin = 'center top'; 
+            canvas.style.transform = `scale(${e.target.value})`;
+        };
 
+        // File Upload Engine
         document.getElementById('upload').onchange = function(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -741,8 +605,6 @@ zoomSlider.oninput = (e) => {
             if(element) element.classList.add('active');
             document.getElementById('customColor').value = color;
         }
-
-        document.getElementById('customColor').oninput = (e) => selectColor(e.target.value);
 
         function setTool(tool) {
             currentTool = tool;
@@ -820,6 +682,7 @@ zoomSlider.oninput = (e) => {
             ctx.beginPath();
         }
 
+        // Event Listeners for Painting
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
         window.addEventListener('mouseup', stopDrawing);
@@ -844,6 +707,7 @@ zoomSlider.oninput = (e) => {
             img.src = src; 
         }
 
+        // Flood Fill Algorithm
         function floodFill(startX, startY, fillHex) {
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const width = imageData.width;
@@ -893,98 +757,72 @@ zoomSlider.oninput = (e) => {
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             } catch (err) {
-                alert("Security block: To save your artwork, this file needs to be hosted on a local development server (like VS Code Live Server) or a website host!");
+                alert("Security block: To save your artwork, this file needs to be hosted on GitHub Pages or a development server!");
                 console.error(err);
             }
         }
 
-        // Preload default template when page finishes loading
-        window.addEventListener('DOMContentLoaded', () => {
-            loadTemplate('images/LOL.PNG');
-        });
-
         // --- 💾 LOCAL STORAGE DRAFT SYSTEMS ---
+        function saveDraft() {
+            try {
+                const canvasDataUrl = canvas.toDataURL('image/png');
+                localStorage.setItem('colourplay_canvas_draft', canvasDataUrl);
+                
+                const statusText = document.getElementById('draft-status');
+                statusText.innerText = "Draft saved successfully!";
+                statusText.style.color = "#2ecc71"; 
+                
+                checkExistingDraft();
+                
+                setTimeout(() => {
+                    statusText.innerText = "Draft stored safely on device";
+                    statusText.style.color = "var(--text-muted)";
+                }, 3000);
+            } catch (err) {
+                alert("Could not save draft locally. Check browser permissions!");
+                console.error(err);
+            }
+        }
 
-// This checks if a draft already exists when the page first loads
-window.addEventListener('DOMContentLoaded', () => {
-    checkExistingDraft();
-});
+        function loadDraft() {
+            const savedData = localStorage.getItem('colourplay_canvas_draft');
+            if (savedData) {
+                saveState(); 
+                const img = new Image();
+                img.onload = () => {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    document.getElementById('draft-status').innerText = "Draft loaded!";
+                    setTimeout(() => {
+                        document.getElementById('draft-status').innerText = "Draft stored safely on device";
+                    }, 2000);
+                };
+                img.src = savedData;
+            }
+        }
 
-function saveDraft() {
-    try {
-        // Convert the current canvas image data into a compact text string
-        const canvasDataUrl = canvas.toDataURL('image/png');
-        
-        // Save it into the browser's private local storage locker
-        localStorage.setItem('colourplay_canvas_draft', canvasDataUrl);
-        
-        // Provide gentle visual feedback that it worked
-        const statusText = document.getElementById('draft-status');
-        statusText.innerText = "Draft saved successfully!";
-        statusText.style.color = "#2ecc71"; // Success green
-        
-        // Re-check the draft state to light up the load button
-        checkExistingDraft();
-        
-        // Reset the text back to normal after 3 seconds
-        setTimeout(() => {
-            statusText.innerText = "Draft stored safely on device";
-            statusText.style.color = "var(--text-muted)";
-        }, 3000);
-
-    } catch (err) {
-        alert("Could not save draft locally. Make sure cookies/local storage aren't fully blocked!");
-        console.error(err);
-    }
-}
-
-function loadDraft() {
-    const savedData = localStorage.getItem('colourplay_canvas_draft');
-    
-    if (savedData) {
-        // Push the current pristine or old state to the undo stack before replacing it
-        saveState(); 
-        
-        const img = new Image();
-        img.onload = () => {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0);
-            
+        function checkExistingDraft() {
+            const loadBtn = document.getElementById('btn-load-draft');
             const statusText = document.getElementById('draft-status');
-            statusText.innerText = "Draft loaded!";
+            const hasDraft = localStorage.getItem('colourplay_canvas_draft');
             
-            setTimeout(() => {
+            if (hasDraft) {
+                loadBtn.removeAttribute('disabled');
+                loadBtn.style.opacity = '1';
+                loadBtn.style.cursor = 'pointer';
+                loadBtn.style.background = 'var(--warning)'; 
+                loadBtn.style.color = 'white';
                 statusText.innerText = "Draft stored safely on device";
-            }, 2000);
-        };
-        img.src = savedData;
-    }
-}
-
-function checkExistingDraft() {
-    const loadBtn = document.getElementById('btn-load-draft');
-    const statusText = document.getElementById('draft-status');
-    const hasDraft = localStorage.getItem('colourplay_canvas_draft');
-    
-    if (hasDraft) {
-        // Light up the load button and make it clickable
-        loadBtn.removeAttribute('disabled');
-        loadBtn.style.opacity = '1';
-        loadBtn.style.cursor = 'pointer';
-        loadBtn.style.background = 'var(--warning)'; // Uses your lovely soft orange theme color
-        loadBtn.style.color = 'white';
-        statusText.innerText = "Draft stored safely on device";
-    } else {
-        // Keep it greyed out if memory is empty
-        loadBtn.setAttribute('disabled', 'true');
-        loadBtn.style.opacity = '0.5';
-        loadBtn.style.cursor = 'not-allowed';
-        loadBtn.style.background = '#f1f2f6';
-        loadBtn.style.color = 'var(--text-muted)';
-        statusText.innerText = "No saved draft found";
-    }
-}
+            } else {
+                loadBtn.setAttribute('disabled', 'true');
+                loadBtn.style.opacity = '0.5';
+                loadBtn.style.cursor = 'not-allowed';
+                loadBtn.style.background = '#f1f2f6';
+                loadBtn.style.color = 'var(--text-muted)';
+                statusText.innerText = "No saved draft found";
+            }
+        }
     </script>
 </body>
 </html>
