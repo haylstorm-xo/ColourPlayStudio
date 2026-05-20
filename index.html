@@ -416,6 +416,19 @@
             }
             .overlay h1 { font-size: 1.8rem; }
         }
+    
+    .pastel-rainbow {
+    /* A soft blend of pastel pink, orange, yellow, green, blue, and purple */
+    background: linear-gradient(to right, #ffb7b2, #ffdac1, #e2f0cb, #b5ead7, #c7ceea, #ffb7b2);
+    
+    /* These three lines clip the background colors into the shape of the letters */
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Gives the text a little extra weight so the colors stand out beautifully */
+    font-weight: 700; 
+}
     </style>
 </head>
     
@@ -423,7 +436,7 @@
     <div id="welcome-overlay" class="overlay">
         <div class="overlay-content">
             <p class="subtitle">AN INTENTIONAL CANVAS</p>
-            <h1>Bring a moment of colour to your day.</h1>
+            <h1>Bring a moment of <span class="pastel-rainbow">colour</span> to your day.</h1>
             <p class="description">A minimalist digital canvas designed to let you unwind. Upload your own art or explore our templates. Pick a shade, fill the canvas, and clear your mind.</p>
             <button class="btn-start" onclick="closeOverlay()">Get started</button>
         </div>
